@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Heart Project</title>
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #1a0505; /* Dark sexy background */
+        }
+        canvas {
+            background-color: #1a0505;
+            border-radius: 20px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        #musicBtn {
+            position: absolute;
+            bottom: 30px;
+            right: 30px;
+            padding: 12px 24px;
+            background: linear-gradient(45deg, #ff1744, #d50000);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            font-family: sans-serif;
+            font-weight: bold;
+            font-size: 14px;
+            box-shadow: 0 4px 15px rgba(255, 23, 68, 0.4);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        #musicBtn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(255, 23, 68, 0.6);
+        }
+    </style>
+</head>
+<body>
+    <canvas id="heartCanvas" width="500" height="500"></canvas>
+
+    <!-- Music Control -->
+    <button id="musicBtn" onclick="toggleMusic()">Play Music 🎵</button>
+    <div id="musicContainer" style="position: absolute; width: 1px; height: 1px; overflow: hidden; opacity: 0;"></div>
+
+    <script>
+        // Get the canvas element and its 2D drawing context
+        const canvas = document.getElementById('heartCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Define the center of the canvas
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+
+        let isPlaying = false;
+        function toggleMusic() {
+            const container = document.getElementById('musicContainer');
+            const btn = document.getElementById('musicBtn');
+            
+            if (!isPlaying) {
+                container.innerHTML = '<iframe width="1" height="1" src="https://www.youtube.com/embed/TqzInmTVu_E?autoplay=1&loop=1&playlist=TqzInmTVu_E" title="Background Music" frameborder="0" allow="autoplay; encrypted-media"></iframe>';
+                btn.innerHTML = "Pause Music ⏸️";
+                isPlaying = true;
+            } else {
+                container.innerHTML = '';
+                btn.innerHTML = "Play Music 🎵";
+                isPlaying = false;
+            }
+        }
+
+        function drawBackground() {
+            // Clear and set base color
+            ctx.fillStyle = "#1a0505";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Draw hugging emojis
+            ctx.save();
+            ctx.font = "30px serif";
+            ctx.globalAlpha = 0.2;
+            ctx.textAlign = "center";
+            for (let y = 20; y < canvas.height; y += 70) {
+                for (let x = 20; x < canvas.width; x += 90) {
+                    ctx.fillText("🤗", x + (y % 140 === 20 ? 0 : 45), y);
+                }
+            }
+            ctx.restore();
+
+            // Draw tiny words
+            ctx.fillStyle = "rgba(255, 215, 0, 0.3)"; // Golden text
+            ctx.font = "bold 20px sans-serif";
+            ctx.textAlign = "center";
+            
+            const words = ["Valary", "Caring", "Thoughtful", "Loyal", "Bright spirit", "Always there", "True friend", "Kind-hearted", "Inspiring", "Uplifting presence", "Full of laughter", "Supportive", "Genuine", "Warm soul", "Beautiful inside and out", "Brings joy"];
+            let i = 0;
+            for (let y = 30; y < canvas.height; y += 40) {
+                for (let x = 50; x < canvas.width; x += 200) {
+                    ctx.fillText(words[i % words.length], x, y);
+                    i++;
+                }
+            }
+        }
+
+        function drawHeart(scale) {
+            ctx.save();
+            
+            // Scale from center
+            ctx.translate(centerX, centerY);
+            ctx.scale(scale, scale);
+            ctx.translate(-centerX, -centerY);
+
+            ctx.beginPath();
+            ctx.moveTo(centerX, centerY - 50);
+            ctx.bezierCurveTo(centerX - 100, centerY - 150, centerX - 200, centerY + 50, centerX, centerY + 180);
+            ctx.bezierCurveTo(centerX + 200, centerY + 50, centerX + 100, centerY - 150, centerX, centerY - 50);
+
+            // Sweet Gradient Fill
+            const gradient = ctx.createRadialGradient(centerX - 50, centerY - 50, 10, centerX, centerY, 150);
+            gradient.addColorStop(0, "#ff80ab"); // Highlight
+            gradient.addColorStop(0.6, "#d50000"); // Rich red
+            gradient.addColorStop(1, "#8a0000"); // Shadow
+            
+            ctx.fillStyle = gradient;
+            ctx.shadowColor = "rgba(0,0,0,0.2)";
+            ctx.shadowBlur = 20;
+            ctx.fill();
+            
+            ctx.restore();
+        }
+
+        function drawArrowTail(scale) {
+            ctx.save();
+            ctx.translate(centerX, centerY);
+            ctx.scale(scale, scale);
+            ctx.rotate(-Math.PI / 4); // -45 degrees tilt
+
+            // Shaft Gradient (Wood texture)
+            const shaftGrad = ctx.createLinearGradient(0, -5, 0, 5);
+            shaftGrad.addColorStop(0, "#5D4037");
+            shaftGrad.addColorStop(0.4, "#A1887F");
+            shaftGrad.addColorStop(1, "#3E2723");
+
+            // Draw Tail Shaft (Entering top-left)
+            ctx.fillStyle = shaftGrad;
+            ctx.fillRect(-250, -4, 170, 8); 
+
+            // Fletching (Feathers)
+            ctx.fillStyle = "#ECEFF1";
+            ctx.beginPath();
+            // Top feather
+            ctx.moveTo(-240, -4); ctx.lineTo(-260, -20); ctx.lineTo(-220, -20); ctx.lineTo(-200, -4);
+            // Bottom feather
+            ctx.moveTo(-240, 4); ctx.lineTo(-260, 20); ctx.lineTo(-220, 20); ctx.lineTo(-200, 4);
+            ctx.fill();
+            
+            // Feather details
+            ctx.strokeStyle = "#CFD8DC";
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(-240, -4); ctx.lineTo(-220, -20);
+            ctx.moveTo(-240, 4); ctx.lineTo(-220, 20);
+            ctx.stroke();
+
+            ctx.restore();
+        }
+
+        function drawArrowHead(scale) {
+            ctx.save();
+            ctx.translate(centerX, centerY);
+            ctx.scale(scale, scale);
+            ctx.rotate(-Math.PI / 4);
+
+            // Shaft Gradient (Wood)
+            const shaftGrad = ctx.createLinearGradient(0, -5, 0, 5);
+            shaftGrad.addColorStop(0, "#5D4037");
+            shaftGrad.addColorStop(0.4, "#A1887F");
+            shaftGrad.addColorStop(1, "#3E2723");
+
+            // Draw Head Shaft (Exiting bottom-right)
+            ctx.fillStyle = shaftGrad;
+            ctx.fillRect(70, -4, 100, 8); 
+
+            // Metal Tip Gradient
+            const tipGrad = ctx.createLinearGradient(160, -10, 200, 10);
+            tipGrad.addColorStop(0, "#B0BEC5"); // Light silver
+            tipGrad.addColorStop(0.5, "#ECEFF1"); // Shine
+            tipGrad.addColorStop(1, "#455A64"); // Dark silver
+
+            ctx.fillStyle = tipGrad;
+            ctx.beginPath();
+            ctx.moveTo(170, -4); ctx.lineTo(170, -12); ctx.lineTo(220, 0); ctx.lineTo(170, 12); ctx.lineTo(170, 4);
+            ctx.fill();
+
+            ctx.restore();
+        }
+
+        function animate() {
+            const scale = 1 + 0.05 * Math.sin(Date.now() * 0.004); // Heartbeat
+            drawBackground();
+            drawArrowTail(scale); // Draw tail first (behind)
+            drawHeart(scale);
+            drawArrowHead(scale); // Draw head last (in front)
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+    </script>
+</body>
+</html>
